@@ -50,6 +50,7 @@ namespace ASP_MessageBoard.Controllers
                     PhoneNumber = model.PhoneNumber,
                     Email = model.Email,
                     Password = model.Password,
+                    Biography = model.Biography,
                 };
 
                 await _accountService.RegisterAsync(request, cancellationToken);
