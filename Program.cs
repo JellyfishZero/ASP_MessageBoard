@@ -5,6 +5,7 @@ using ASP_MessageBoard.Repositories.Interfaces;
 using ASP_MessageBoard.Services.Implementations;
 using ASP_MessageBoard.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,21 @@ builder.Services.AddSingleton<IDbConnectionFactory, SqlConnectionFactory>(); // 
 builder.Services.AddScoped<IUserRepository, UserRepository>(); // 使用者資料存取服務
 builder.Services.AddScoped<IAccountService, AccountService>(); // 帳號服務
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>(); // 密碼雜湊服務
+builder.Services
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+
+        options.Cookie.Name = "ASP_MessageBoard.Auth";
+        options.Cookie.HttpOnly = true; // JavaScript 無法讀取登入 Cookie，降低 Cookie 被 XSS 竊取的風險。
+        options.Cookie.SameSite = SameSiteMode.Lax; // 降低跨站請求攜帶 Cookie 的風險。
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest; // HTTPS 時只透過 HTTPS 傳送，本機 HTTP 開發仍可運作。
+
+        options.ExpireTimeSpan = TimeSpan.FromHours(8);
+        options.SlidingExpiration = true; // 使用者持續操作時延長登入有效期。
+    });
 
 var app = builder.Build();
 
@@ -28,6 +44,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
