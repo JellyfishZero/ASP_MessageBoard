@@ -47,7 +47,7 @@ CREATE OR ALTER PROCEDURE dbo.usp_User_Create
     @UserName NVARCHAR(50),
     @PhoneNumber VARCHAR(20),
     @PasswordHash NVARCHAR(512),
-    @Email NVARCHAR(254) = NULL,
+    @Email NVARCHAR(254),
     @CoverImagePath NVARCHAR(500) = NULL,
     @Biography NVARCHAR(500) = NULL
 AS

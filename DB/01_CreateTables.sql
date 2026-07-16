@@ -12,7 +12,7 @@ BEGIN TRY
             UserId INT IDENTITY(1, 1) NOT NULL,
             UserName NVARCHAR(50) NOT NULL,
             PhoneNumber VARCHAR(20) NOT NULL,
-            Email NVARCHAR(254) NULL,
+            Email NVARCHAR(254) NOT NULL,
             PasswordHash NVARCHAR(512) NOT NULL,
             CoverImagePath NVARCHAR(500) NULL,
             Biography NVARCHAR(500) NULL,
@@ -25,6 +25,8 @@ BEGIN TRY
                 CHECK (LEN(LTRIM(RTRIM(UserName))) > 0),
             CONSTRAINT CK_Users_PhoneNumber_NotBlank
                 CHECK (LEN(LTRIM(RTRIM(PhoneNumber))) > 0),
+            CONSTRAINT CK_Users_Email_NotBlank
+                CHECK (LEN(LTRIM(RTRIM(Email))) > 0),
             CONSTRAINT CK_Users_PasswordHash_NotBlank
                 CHECK (LEN(LTRIM(RTRIM(PasswordHash))) > 0)
         );
