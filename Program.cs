@@ -1,6 +1,10 @@
+using ASP_MessageBoard.Models.Entities;
 using ASP_MessageBoard.Repositories;
 using ASP_MessageBoard.Repositories.Implementations;
 using ASP_MessageBoard.Repositories.Interfaces;
+using ASP_MessageBoard.Services.Implementations;
+using ASP_MessageBoard.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<IDbConnectionFactory, SqlConnectionFactory>(); // sql連接工廠
 builder.Services.AddScoped<IUserRepository, UserRepository>(); // 使用者資料存取服務
+builder.Services.AddScoped<IAccountService, AccountService>(); // 帳號服務
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>(); // 密碼雜湊服務
 
 var app = builder.Build();
 
