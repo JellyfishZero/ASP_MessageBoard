@@ -50,9 +50,7 @@ namespace ASP_MessageBoard.Controllers
 
                 TempData["SuccessMessage"] = "註冊成功，請登入。";
 
-                // 登入功能尚未完成，暫時回到註冊頁。
-                // return RedirectToAction(nameof(Login));
-                return RedirectToAction(nameof(Register));
+                return RedirectToAction(nameof(Login));
             }
             catch (DuplicatePhoneNumberException exception)
             {
