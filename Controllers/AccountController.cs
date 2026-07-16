@@ -1,6 +1,7 @@
 ﻿using ASP_MessageBoard.Services.Interfaces;
 using ASP_MessageBoard.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using ASP_MessageBoard.Common.Exceptions;
 
 namespace ASP_MessageBoard.Controllers
 {
@@ -20,6 +21,7 @@ namespace ASP_MessageBoard.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(
             RegisterViewModel model,
             CancellationToken cancellationToken
@@ -40,7 +42,7 @@ namespace ASP_MessageBoard.Controllers
                 // return RedirectToAction(nameof(Login));
                 return RedirectToAction(nameof(Register));
             }
-            catch (InvalidOperationException exception)
+            catch (DuplicatePhoneNumberException exception)
             {
                 ModelState.AddModelError(nameof(model.PhoneNumber), exception.Message);
 
