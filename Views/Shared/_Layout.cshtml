@@ -27,6 +27,47 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
+
+                    <ul class="navbar-nav">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <span class="nav-link text-dark">
+                                    你好，@User.Identity.Name
+                                </span>
+                            </li>
+
+                            <li class="nav-item">
+                                <form asp-controller="Account"
+                                      asp-action="Logout"
+                                      method="post"
+                                      class="d-inline">
+                                    <button type="submit"
+                                            class="nav-link btn btn-link text-dark border-0">
+                                        登出
+                                    </button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="Account"
+                                   asp-action="Register"
+                                   class="nav-link text-dark">
+                                    註冊
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a asp-controller="Account"
+                                   asp-action="Login"
+                                   class="nav-link text-dark">
+                                    登入
+                                </a>
+                            </li>
+                        }
+                    </ul>
                 </div>
             </div>
         </nav>

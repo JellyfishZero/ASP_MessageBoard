@@ -1,5 +1,5 @@
 ﻿using ASP_MessageBoard.Models.Entities;
-using ASP_MessageBoard.Services.Dtos;
+using ASP_MessageBoard.Services.DTOs;
 
 namespace ASP_MessageBoard.Services.Interfaces
 {
@@ -9,5 +9,7 @@ namespace ASP_MessageBoard.Services.Interfaces
             RegisterRequest request,
             CancellationToken cancellationToken = default
         );
+
+        Task<User?> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default);
     }
 }
