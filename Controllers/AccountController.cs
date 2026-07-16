@@ -21,6 +21,12 @@ namespace ASP_MessageBoard.Controllers
         [HttpGet]
         public IActionResult Register()
         {
+            // 避免重新進入註冊頁
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             return View(new RegisterViewModel());
         }
 
@@ -139,6 +145,16 @@ namespace ASP_MessageBoard.Controllers
             {
                 return LocalRedirect(returnUrl);
             }
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme);
 
             return RedirectToAction("Index", "Home");
         }
