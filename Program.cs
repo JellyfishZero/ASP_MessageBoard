@@ -4,8 +4,8 @@ using ASP_MessageBoard.Repositories.Implementations;
 using ASP_MessageBoard.Repositories.Interfaces;
 using ASP_MessageBoard.Services.Implementations;
 using ASP_MessageBoard.Services.Interfaces;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,8 +16,9 @@ builder.Services.AddScoped<IUserRepository, UserRepository>(); // 使用者資�
 builder.Services.AddScoped<IAccountService, AccountService>(); // 帳號服務
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>(); // 密碼雜湊服務
 builder.Services.AddScoped<IPostRepository, PostRepository>(); // 文章資料存取服務
-builder.Services
-    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+builder.Services.AddSingleton<IImageStorageService, LocalImageStorageService>(); // 文章圖片儲存服務
+builder
+    .Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
         options.LoginPath = "/Account/Login";
