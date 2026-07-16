@@ -7,6 +7,11 @@
             CancellationToken cancellationToken = default
         );
 
+        Task<string> SaveCoverImageAsync(
+            IFormFile image,
+            CancellationToken cancellationToken = default
+        );
+
         Task DeleteAsync(string? imagePath, CancellationToken cancellationToken = default);
     }
 }

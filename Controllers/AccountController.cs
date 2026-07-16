@@ -49,8 +49,9 @@ namespace ASP_MessageBoard.Controllers
                     UserName = model.UserName,
                     PhoneNumber = model.PhoneNumber,
                     Email = model.Email,
-                    Password = model.Password,
                     Biography = model.Biography,
+                    Password = model.Password,
+                    CoverImage = model.CoverImage,
                 };
 
                 await _accountService.RegisterAsync(request, cancellationToken);
@@ -62,6 +63,12 @@ namespace ASP_MessageBoard.Controllers
             catch (DuplicatePhoneNumberException exception)
             {
                 ModelState.AddModelError(nameof(model.PhoneNumber), exception.Message);
+
+                return View(model);
+            }
+            catch (ImageValidationException exception)
+            {
+                ModelState.AddModelError(nameof(model.CoverImage), exception.Message);
 
                 return View(model);
             }
@@ -154,8 +161,7 @@ namespace ASP_MessageBoard.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme);
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
             return RedirectToAction("Index", "Posts");
         }

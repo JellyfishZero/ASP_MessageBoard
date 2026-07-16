@@ -10,6 +10,8 @@
 
         public string? Biography { get; init; }
 
+        public IFormFile? CoverImage { get; init; }
+
         public string Password { get; init; } = string.Empty;
     }
 }

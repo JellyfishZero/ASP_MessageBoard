@@ -18,7 +18,6 @@ BEGIN TRY
             Biography NVARCHAR(500) NULL,
             CreatedAt DATETIME2(0) NOT NULL
                 CONSTRAINT DF_Users_CreatedAt DEFAULT SYSUTCDATETIME(),
-            UpdatedAt DATETIME2(0) NULL,
 
             CONSTRAINT PK_Users PRIMARY KEY CLUSTERED (UserId),
             CONSTRAINT CK_Users_UserName_NotBlank

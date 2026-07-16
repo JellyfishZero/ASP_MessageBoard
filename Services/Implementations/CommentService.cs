@@ -61,6 +61,7 @@ namespace ASP_MessageBoard.Services.Implementations
                 PostId = record.PostId,
                 Content = record.Content,
                 CreatedAt = record.CreatedAt,
+                UserCoverImagePath = record.UserCoverImagePath,
             };
         }
     }

@@ -30,7 +30,7 @@ builder
         options.Cookie.Name = "ASP_MessageBoard.Auth";
         options.Cookie.HttpOnly = true; // JavaScript 無法讀取登入 Cookie，降低 Cookie 被 XSS 竊取的風險。
         options.Cookie.SameSite = SameSiteMode.Lax; // 降低跨站請求攜帶 Cookie 的風險。
-        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest; // HTTPS 時只透過 HTTPS 傳送，本機 HTTP 開發仍可運作。
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 
         options.ExpireTimeSpan = TimeSpan.FromHours(8);
         options.SlidingExpiration = true; // 使用者持續操作時延長登入有效期。
@@ -47,6 +47,9 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseStaticFiles();
+
 app.UseRouting();
 
 app.UseAuthentication();
