@@ -64,17 +64,19 @@ else
                         @if (!string.IsNullOrWhiteSpace(post.ImagePath))
                         {
                             <img src="@post.ImagePath"
-                                 class="img-fluid rounded mb-3"
+                                 class="img-fluid rounded d-block mb-3"
                                  alt="文章圖片"
                                  loading="lazy" />
                         }
 
-                        <a asp-controller="Posts"
-                           asp-action="Details"
-                           asp-route-id="@post.PostId"
-                           class="btn btn-outline-primary">
-                            查看文章
-                        </a>
+                        <div>
+                            <a asp-controller="Posts"
+                               asp-action="Details"
+                               asp-route-id="@post.PostId"
+                               class="btn btn-outline-primary">
+                                查看文章
+                            </a>
+                        </div>
                     </div>
                 </article>
             </div>
