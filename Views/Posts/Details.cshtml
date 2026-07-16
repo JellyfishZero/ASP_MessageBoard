@@ -22,20 +22,39 @@
     <div class="card-body p-4">
         <div class="d-flex justify-content-between
             align-items-start gap-3 mb-3">
-            <div>
-                <h1 class="h4 mb-1">@Model.Post.UserName</h1>
+            <div class="d-flex align-items-center gap-3">
+                @if (!string.IsNullOrWhiteSpace(Model.Post.UserCoverImagePath))
+                {
+                    <img src="@Model.Post.UserCoverImagePath"
+                         class="user-avatar rounded-circle"
+                         alt="@Model.Post.UserName 的個人照片" />
+                }
+                else
+                {
+                    <div class="user-avatar user-avatar-placeholder rounded-circle
+                                d-flex align-items-center justify-content-center"
+                         aria-label="@Model.Post.UserName 沒有設定個人照片">
+                        @(string.IsNullOrWhiteSpace(Model.Post.UserName)
+                            ? "?"
+                            : Model.Post.UserName[..1])
+                    </div>
+                }
 
-                <div class="text-muted">
-                    發表於
-                    @Model.Post.CreatedAt.ToLocalTime().ToString("yyyy/MM/dd HH:mm")
+                <div>
+                    <h1 class="h4 mb-1">@Model.Post.UserName</h1>
 
-                    @if (Model.Post.UpdatedAt.HasValue)
-                    {
-                        <span class="ms-2">
-                            更新於
-                            @Model.Post.UpdatedAt.Value.ToLocalTime().ToString("yyyy/MM/dd HH:mm")
-                        </span>
-                    }
+                    <div class="text-muted">
+                        發表於
+                        @Model.Post.CreatedAt.ToLocalTime().ToString("yyyy/MM/dd HH:mm")
+
+                        @if (Model.Post.UpdatedAt.HasValue)
+                        {
+                            <span class="ms-2">
+                                更新於
+                                @Model.Post.UpdatedAt.Value.ToLocalTime().ToString("yyyy/MM/dd HH:mm")
+                            </span>
+                        }
+                    </div>
                 </div>
             </div>
 
@@ -138,10 +157,31 @@
                 <article class="card">
                     <div class="card-body">
                         <div class="d-flex justify-content-between
-                            align-items-start mb-2">
-                            <strong>@comment.UserName</strong>
+                            align-items-start gap-3 mb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                @if (!string.IsNullOrWhiteSpace(comment.UserCoverImagePath))
+                                {
+                                    <img src="@comment.UserCoverImagePath"
+                                         class="user-avatar user-avatar-sm rounded-circle"
+                                         alt="@comment.UserName 的個人照片"
+                                         loading="lazy" />
+                                }
+                                else
+                                {
+                                    <div class="user-avatar user-avatar-sm
+                                                user-avatar-placeholder rounded-circle
+                                                d-flex align-items-center justify-content-center"
+                                         aria-label="@comment.UserName 沒有設定個人照片">
+                                        @(string.IsNullOrWhiteSpace(comment.UserName)
+                                            ? "?"
+                                            : comment.UserName[..1])
+                                    </div>
+                                }
 
-                            <small class="text-muted">
+                                <strong>@comment.UserName</strong>
+                            </div>
+
+                            <small class="text-muted text-nowrap">
                                 @(comment.CreatedAt
                                     .ToLocalTime()
                                     .ToString("yyyy/MM/dd HH:mm"))
