@@ -1,7 +1,10 @@
+using ASP_MessageBoard.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddSingleton<IDbConnectionFactory, SqlConnectionFactory>(); // sql連接工廠
 
 var app = builder.Build();
 
