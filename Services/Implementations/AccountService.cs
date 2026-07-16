@@ -27,6 +27,9 @@ namespace ASP_MessageBoard.Services.Implementations
             var phoneNumber = request.PhoneNumber.Trim();
             var email = request.Email.Trim();
             var userName = request.UserName.Trim();
+            var biography = string.IsNullOrWhiteSpace(request.Biography)
+                ? null
+                : request.Biography.Trim();
 
             var existingUser = await _userRepository.GetByPhoneNumberAsync(
                 phoneNumber,
@@ -43,6 +46,7 @@ namespace ASP_MessageBoard.Services.Implementations
                 UserName = userName,
                 PhoneNumber = phoneNumber,
                 Email = email,
+                Biography = biography,
             };
 
             user.PasswordHash = _passwordHasher.HashPassword(user, request.Password);

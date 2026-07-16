@@ -21,20 +21,20 @@ namespace ASP_MessageBoard.ViewModels
         [Display(Name = "Email")]
         public string Email { get; set; } = string.Empty;
 
+        [Display(Name = "自我介紹")]
+        [StringLength(500, ErrorMessage = "自我介紹不可超過 500 個字元")]
+        [DataType(DataType.MultilineText)]
+        public string? Biography { get; set; }
+
         [Required(ErrorMessage = "請輸入密碼")]
-        [StringLength(
-            100,
-            MinimumLength = 8,
-            ErrorMessage = "密碼長度必須介於 8 到 100 個字元")]
+        [StringLength(100, MinimumLength = 8, ErrorMessage = "密碼長度必須介於 8 到 100 個字元")]
         [DataType(DataType.Password)]
         [Display(Name = "密碼")]
         public string Password { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "請再次輸入密碼")]
         [DataType(DataType.Password)]
-        [Compare(
-            nameof(Password),
-            ErrorMessage = "密碼與確認密碼不一致")]
+        [Compare(nameof(Password), ErrorMessage = "密碼與確認密碼不一致")]
         [Display(Name = "確認密碼")]
         public string ConfirmPassword { get; set; } = string.Empty;
     }
