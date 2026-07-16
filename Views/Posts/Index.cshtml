@@ -1,0 +1,85 @@
+﻿@model IReadOnlyList<ASP_MessageBoard.Services.DTOs.PostDetails>
+
+@{
+    ViewData["Title"] = "文章列表";
+}
+
+@if (TempData["SuccessMessage"] is string message)
+{
+    <div class="alert alert-success" role="alert">
+        @message
+    </div>
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2 mb-0">文章列表</h1>
+
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <a asp-controller="Posts"
+           asp-action="Create"
+           class="btn btn-primary">
+            發表文章
+        </a>
+    }
+</div>
+
+@if (Model.Count == 0)
+{
+    <div class="alert alert-info" role="alert">
+        目前還沒有文章。
+    </div>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var post in Model)
+        {
+            <div class="col-12">
+                <article class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between
+                            align-items-start gap-3 mb-3">
+                            <div>
+                                <h2 class="h5 mb-1">
+                                    @post.UserName
+                                </h2>
+
+                                <small class="text-muted">
+                                    @post.CreatedAt.ToLocalTime().ToString("yyyy/MM/dd HH:mm")
+                                </small>
+
+                                @if (post.UpdatedAt.HasValue)
+                                {
+                                    <small class="text-muted ms-2">
+                                        已編輯
+                                    </small>
+                                }
+                            </div>
+                        </div>
+
+                        <p class="card-text"
+                           style="white-space: pre-wrap;">@post.Content</p>
+
+                        @if (!string.IsNullOrWhiteSpace(post.ImagePath))
+                        {
+                            <img src="@post.ImagePath"
+                                 class="img-fluid rounded d-block mb-3"
+                                 alt="文章圖片"
+                                 loading="lazy" />
+                        }
+
+                        <div>
+                            <a asp-controller="Posts"
+                               asp-action="Details"
+                               asp-route-id="@post.PostId"
+                               class="btn btn-outline-primary">
+                                查看文章
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        }
+    </div>
+}

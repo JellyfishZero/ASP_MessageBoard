@@ -4,8 +4,8 @@ using ASP_MessageBoard.Repositories.Implementations;
 using ASP_MessageBoard.Repositories.Interfaces;
 using ASP_MessageBoard.Services.Implementations;
 using ASP_MessageBoard.Services.Interfaces;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,8 +15,11 @@ builder.Services.AddSingleton<IDbConnectionFactory, SqlConnectionFactory>(); // 
 builder.Services.AddScoped<IUserRepository, UserRepository>(); // 使用者資料存取服務
 builder.Services.AddScoped<IAccountService, AccountService>(); // 帳號服務
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>(); // 密碼雜湊服務
-builder.Services
-    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+builder.Services.AddScoped<IPostRepository, PostRepository>(); // 文章資料存取服務
+builder.Services.AddSingleton<IImageStorageService, LocalImageStorageService>(); // 文章圖片儲存服務
+builder.Services.AddScoped<IPostService, PostService>(); // 文章服務
+builder
+    .Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
         options.LoginPath = "/Account/Login";
@@ -49,7 +52,7 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 
-app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}")
+app.MapControllerRoute(name: "default", pattern: "{controller=Posts}/{action=Index}/{id?}")
     .WithStaticAssets();
 
 app.Run();
