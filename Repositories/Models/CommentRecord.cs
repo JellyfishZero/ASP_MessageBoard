@@ -13,5 +13,6 @@
         public string Content { get; init; } = string.Empty;
 
         public DateTime CreatedAt { get; init; }
+        public string? UserCoverImagePath { get; init; }
     }
 }

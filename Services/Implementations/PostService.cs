@@ -221,6 +221,7 @@ namespace ASP_MessageBoard.Services.Implementations
                 ImagePath = record.ImagePath,
                 CreatedAt = record.CreatedAt,
                 UpdatedAt = record.UpdatedAt,
+                UserCoverImagePath = record.UserCoverImagePath,
             };
         }
     }

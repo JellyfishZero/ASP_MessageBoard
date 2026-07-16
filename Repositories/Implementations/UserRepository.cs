@@ -114,7 +114,6 @@ namespace ASP_MessageBoard.Repositories.Implementations
                 CoverImagePath = GetNullableString(reader, "CoverImagePath"),
                 Biography = GetNullableString(reader, "Biography"),
                 CreatedAt = reader.GetDateTime(reader.GetOrdinal("CreatedAt")),
-                UpdatedAt = GetNullableDateTime(reader, "UpdatedAt"),
             };
         }
 
@@ -123,13 +122,6 @@ namespace ASP_MessageBoard.Repositories.Implementations
             var ordinal = reader.GetOrdinal(columnName);
 
             return reader.IsDBNull(ordinal) ? null : reader.GetString(ordinal);
-        }
-
-        private static DateTime? GetNullableDateTime(DbDataReader reader, string columnName)
-        {
-            var ordinal = reader.GetOrdinal(columnName);
-
-            return reader.IsDBNull(ordinal) ? null : reader.GetDateTime(ordinal);
         }
     }
 }

@@ -110,7 +110,16 @@ namespace ASP_MessageBoard.Repositories.Implementations
                 Content = reader.GetString(reader.GetOrdinal("Content")),
 
                 CreatedAt = reader.GetDateTime(reader.GetOrdinal("CreatedAt")),
+
+                UserCoverImagePath = GetNullableString(reader, "UserCoverImagePath"),
             };
+        }
+
+        private static string? GetNullableString(DbDataReader reader, string columnName)
+        {
+            var ordinal = reader.GetOrdinal(columnName);
+
+            return reader.IsDBNull(ordinal) ? null : reader.GetString(ordinal);
         }
     }
 }
