@@ -15,6 +15,7 @@ builder.Services.AddSingleton<IDbConnectionFactory, SqlConnectionFactory>(); // 
 builder.Services.AddScoped<IUserRepository, UserRepository>(); // 使用者資料存取服務
 builder.Services.AddScoped<IAccountService, AccountService>(); // 帳號服務
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>(); // 密碼雜湊服務
+builder.Services.AddScoped<IPostRepository, PostRepository>(); // 文章資料存取服務
 builder.Services
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
