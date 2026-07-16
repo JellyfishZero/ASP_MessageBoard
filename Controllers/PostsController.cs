@@ -11,10 +11,12 @@ namespace ASP_MessageBoard.Controllers
     public sealed class PostsController : Controller
     {
         private readonly IPostService _postService;
+        private readonly ICommentService _commentService;
 
-        public PostsController(IPostService postService)
+        public PostsController(IPostService postService, ICommentService commentService)
         {
             _postService = postService;
+            _commentService = commentService;
         }
 
         [HttpGet]
@@ -35,7 +37,16 @@ namespace ASP_MessageBoard.Controllers
                 return NotFound();
             }
 
-            return View(post);
+            var comments = await _commentService.GetByPostIdAsync(id, cancellationToken);
+
+            var model = new PostDetailsViewModel
+            {
+                Post = post,
+                Comments = comments,
+                NewComment = new CreateCommentViewModel { PostId = post.PostId },
+            };
+
+            return View(model);
         }
 
         [Authorize]
@@ -216,6 +227,45 @@ namespace ASP_MessageBoard.Controllers
             }
         }
 
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddComment(
+            [Bind(Prefix = "NewComment")] CreateCommentViewModel model,
+            CancellationToken cancellationToken
+        )
+        {
+            if (!TryGetCurrentUserId(out var userId))
+            {
+                return Challenge();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return await BuildDetailsViewAsync(model.PostId, model, cancellationToken);
+            }
+
+            var request = new CreateCommentRequest
+            {
+                UserId = userId,
+                PostId = model.PostId,
+                Content = model.Content,
+            };
+
+            try
+            {
+                await _commentService.CreateAsync(request, cancellationToken);
+
+                TempData["SuccessMessage"] = "留言已新增。";
+
+                return RedirectToAction(nameof(Details), new { id = model.PostId });
+            }
+            catch (PostNotFoundException)
+            {
+                return NotFound();
+            }
+        }
+
         private bool TryGetCurrentUserId(out int userId)
         {
             var userIdText = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -243,6 +293,31 @@ namespace ASP_MessageBoard.Controllers
 
             model.ExistingImagePath = post.ImagePath;
             return true;
+        }
+
+        private async Task<IActionResult> BuildDetailsViewAsync(
+            int postId,
+            CreateCommentViewModel newComment,
+            CancellationToken cancellationToken
+        )
+        {
+            var post = await _postService.GetByIdAsync(postId, cancellationToken);
+
+            if (post is null)
+            {
+                return NotFound();
+            }
+
+            var comments = await _commentService.GetByPostIdAsync(postId, cancellationToken);
+
+            var model = new PostDetailsViewModel
+            {
+                Post = post,
+                Comments = comments,
+                NewComment = newComment,
+            };
+
+            return View(nameof(Details), model);
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿@using System.Security.Claims
-@model ASP_MessageBoard.Services.DTOs.PostDetails
+@model ASP_MessageBoard.ViewModels.PostDetailsViewModel
 
 @{
     ViewData["Title"] = "文章內容";
@@ -9,7 +9,7 @@
 
     var isAuthor =
         int.TryParse(currentUserIdText, out var currentUserId)
-        && currentUserId == Model.UserId;
+        && currentUserId == Model.Post.UserId;
 }
 
 @if (TempData["SuccessMessage"] is string message)
@@ -23,17 +23,17 @@
         <div class="d-flex justify-content-between
             align-items-start gap-3 mb-3">
             <div>
-                <h1 class="h4 mb-1">@Model.UserName</h1>
+                <h1 class="h4 mb-1">@Model.Post.UserName</h1>
 
                 <div class="text-muted">
                     發表於
-                    @Model.CreatedAt.ToLocalTime().ToString("yyyy/MM/dd HH:mm")
+                    @Model.Post.CreatedAt.ToLocalTime().ToString("yyyy/MM/dd HH:mm")
 
-                    @if (Model.UpdatedAt.HasValue)
+                    @if (Model.Post.UpdatedAt.HasValue)
                     {
                         <span class="ms-2">
                             更新於
-                            @Model.UpdatedAt.Value.ToLocalTime().ToString("yyyy/MM/dd HH:mm")
+                            @Model.Post.UpdatedAt.Value.ToLocalTime().ToString("yyyy/MM/dd HH:mm")
                         </span>
                     }
                 </div>
@@ -44,14 +44,14 @@
                 <div class="d-flex gap-2">
                     <a asp-controller="Posts"
                        asp-action="Edit"
-                       asp-route-id="@Model.PostId"
+                       asp-route-id="@Model.Post.PostId"
                        class="btn btn-outline-secondary">
                         編輯
                     </a>
 
                     <form asp-controller="Posts"
                           asp-action="Delete"
-                          asp-route-id="@Model.PostId"
+                          asp-route-id="@Model.Post.PostId"
                           method="post"
                           onsubmit="return confirm('確定要刪除這篇文章嗎？');">
                         <button type="submit"
@@ -63,17 +63,99 @@
             }
         </div>
 
-        <p style="white-space: pre-wrap;">@Model.Content</p>
+        <p style="white-space: pre-wrap;">@Model.Post.Content</p>
 
-        @if (!string.IsNullOrWhiteSpace(Model.ImagePath))
+        @if (!string.IsNullOrWhiteSpace(Model.Post.ImagePath))
         {
-            <img src="@Model.ImagePath"
+            <img src="@Model.Post.ImagePath"
                  class="img-fluid rounded"
                  alt="文章圖片" />
         }
     </div>
 </article>
+<section class="mt-4">
+    <h2 class="h4 mb-3">
+        留言（@Model.Comments.Count）
+    </h2>
 
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <div class="card mb-4">
+            <div class="card-body">
+                <form asp-controller="Posts"
+                      asp-action="AddComment"
+                      method="post">
+                    <input asp-for="NewComment.PostId"
+                           type="hidden" />
+
+                    <div asp-validation-summary="ModelOnly"
+                         class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="NewComment.Content"
+                               class="form-label"></label>
+
+                        <textarea asp-for="NewComment.Content"
+                                  class="form-control"
+                                  rows="4"
+                                  maxlength="1000"
+                                  placeholder="輸入留言……"></textarea>
+
+                        <span asp-validation-for="NewComment.Content"
+                              class="text-danger"></span>
+                    </div>
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        新增留言
+                    </button>
+                </form>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-secondary">
+            請先
+            <a asp-controller="Account"
+               asp-action="Login"
+               asp-route-returnUrl="@Context.Request.Path">
+                登入
+            </a>
+            後留言。
+        </div>
+    }
+
+    @if (Model.Comments.Count == 0)
+    {
+        <p class="text-muted">目前還沒有留言。</p>
+    }
+    else
+    {
+        <div class="d-grid gap-3">
+            @foreach (var comment in Model.Comments)
+            {
+                <article class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between
+                            align-items-start mb-2">
+                            <strong>@comment.UserName</strong>
+
+                            <small class="text-muted">
+                                @(comment.CreatedAt
+                                    .ToLocalTime()
+                                    .ToString("yyyy/MM/dd HH:mm"))
+                            </small>
+                        </div>
+
+                        <p class="mb-0"
+                           style="white-space: pre-wrap;">@comment.Content</p>
+                    </div>
+                </article>
+            }
+        </div>
+    }
+</section>
 <div class="mt-3">
     <a asp-controller="Posts"
        asp-action="Index"
@@ -81,3 +163,7 @@
         返回文章列表
     </a>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

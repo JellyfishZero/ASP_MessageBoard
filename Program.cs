@@ -18,6 +18,8 @@ builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>(); // �
 builder.Services.AddScoped<IPostRepository, PostRepository>(); // 文章資料存取服務
 builder.Services.AddSingleton<IImageStorageService, LocalImageStorageService>(); // 文章圖片儲存服務
 builder.Services.AddScoped<IPostService, PostService>(); // 文章服務
+builder.Services.AddScoped<ICommentRepository, CommentRepository>(); // 留言資料存取服務
+builder.Services.AddScoped<ICommentService, CommentService>(); // 留言服務
 builder
     .Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
