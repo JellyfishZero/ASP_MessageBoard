@@ -17,8 +17,7 @@ BEGIN
         PasswordHash,
         CoverImagePath,
         Biography,
-        CreatedAt,
-        UpdatedAt
+        CreatedAt
     FROM dbo.Users
     WHERE PhoneNumber = @PhoneNumber;
 END;
@@ -38,8 +37,7 @@ BEGIN
         PasswordHash,
         CoverImagePath,
         Biography,
-        CreatedAt,
-        UpdatedAt
+        CreatedAt
     FROM dbo.Users
     WHERE UserId = @UserId;
 END;
@@ -104,8 +102,7 @@ BEGIN
         PasswordHash,
         CoverImagePath,
         Biography,
-        CreatedAt,
-        UpdatedAt
+        CreatedAt
     FROM dbo.Users
     WHERE UserId = @UserId;
 END;
@@ -131,6 +128,7 @@ BEGIN
         p.PostId,
         p.UserId,
         u.UserName,
+        u.CoverImagePath AS UserCoverImagePath,
         p.Content,
         p.ImagePath,
         p.CreatedAt,
@@ -150,6 +148,7 @@ BEGIN
         p.PostId,
         p.UserId,
         u.UserName,
+        u.CoverImagePath AS UserCoverImagePath,
         p.Content,
         p.ImagePath,
         p.CreatedAt,
@@ -170,6 +169,7 @@ BEGIN
         p.PostId,
         p.UserId,
         u.UserName,
+        u.CoverImagePath AS UserCoverImagePath,
         p.Content,
         p.ImagePath,
         p.CreatedAt,
@@ -205,6 +205,7 @@ BEGIN
         p.PostId,
         p.UserId,
         u.UserName,
+        u.CoverImagePath AS UserCoverImagePath,
         p.Content,
         p.ImagePath,
         p.CreatedAt,
@@ -293,6 +294,7 @@ BEGIN
         c.CommentId,
         c.UserId,
         u.UserName,
+        u.CoverImagePath AS UserCoverImagePath,
         c.PostId,
         c.Content,
         c.CreatedAt
@@ -313,6 +315,7 @@ BEGIN
         c.CommentId,
         c.UserId,
         u.UserName,
+        u.CoverImagePath AS UserCoverImagePath,
         c.PostId,
         c.Content,
         c.CreatedAt
