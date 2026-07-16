@@ -1,9 +1,10 @@
 ﻿using ASP_MessageBoard.Models.Entities;
 using ASP_MessageBoard.Repositories.Interfaces;
 using ASP_MessageBoard.Services.Interfaces;
-using ASP_MessageBoard.ViewModel;
+using ASP_MessageBoard.Common.Exceptions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
+using ASP_MessageBoard.Services.Dtos;
 
 namespace ASP_MessageBoard.Services.Implementations
 {
@@ -19,13 +20,13 @@ namespace ASP_MessageBoard.Services.Implementations
         }
 
         public async Task<User> RegisterAsync(
-            RegisterViewModel model,
+            RegisterRequest request,
             CancellationToken cancellationToken = default
         )
         {
-            var phoneNumber = model.PhoneNumber.Trim();
-            var email = model.Email.Trim();
-            var userName = model.UserName.Trim();
+            var phoneNumber = request.PhoneNumber.Trim();
+            var email = request.Email.Trim();
+            var userName = request.UserName.Trim();
 
             var existingUser = await _userRepository.GetByPhoneNumberAsync(
                 phoneNumber,
@@ -34,7 +35,7 @@ namespace ASP_MessageBoard.Services.Implementations
 
             if (existingUser is not null)
             {
-                throw new InvalidOperationException("此手機號碼已經註冊。");
+                throw new DuplicatePhoneNumberException();
             }
 
             var user = new User
@@ -44,7 +45,7 @@ namespace ASP_MessageBoard.Services.Implementations
                 Email = email,
             };
 
-            user.PasswordHash = _passwordHasher.HashPassword(user, model.Password);
+            user.PasswordHash = _passwordHasher.HashPassword(user, request.Password);
 
             try
             {
@@ -53,7 +54,7 @@ namespace ASP_MessageBoard.Services.Implementations
             catch (SqlException exception) when (exception.Number == 50001)
             {
                 // 防止兩個請求同時通過前面的重複檢查。
-                throw new InvalidOperationException("此手機號碼已經註冊。", exception);
+                throw new DuplicatePhoneNumberException(exception);
             }
         }
     }
