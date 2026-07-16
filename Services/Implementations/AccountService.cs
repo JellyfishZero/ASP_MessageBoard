@@ -1,10 +1,10 @@
-﻿using ASP_MessageBoard.Models.Entities;
+﻿using ASP_MessageBoard.Common.Exceptions;
+using ASP_MessageBoard.Models.Entities;
 using ASP_MessageBoard.Repositories.Interfaces;
+using ASP_MessageBoard.Services.DTOs;
 using ASP_MessageBoard.Services.Interfaces;
-using ASP_MessageBoard.Common.Exceptions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
-using ASP_MessageBoard.Services.DTOs;
 
 namespace ASP_MessageBoard.Services.Implementations
 {
@@ -56,6 +56,35 @@ namespace ASP_MessageBoard.Services.Implementations
                 // 防止兩個請求同時通過前面的重複檢查。
                 throw new DuplicatePhoneNumberException(exception);
             }
+        }
+
+        public async Task<User?> LoginAsync(
+            LoginRequest request,
+            CancellationToken cancellationToken = default
+        )
+        {
+            var phoneNumber = request.PhoneNumber.Trim();
+
+            var user = await _userRepository.GetByPhoneNumberAsync(phoneNumber, cancellationToken);
+
+            if (user is null)
+            {
+                return null;
+            }
+
+            var verificationResult = _passwordHasher.VerifyHashedPassword(
+                user,
+                user.PasswordHash,
+                request.Password
+            );
+
+            return verificationResult switch
+            {
+                PasswordVerificationResult.Failed => null,
+                PasswordVerificationResult.Success => user,
+                PasswordVerificationResult.SuccessRehashNeeded => user,
+                _ => null,
+            };
         }
     }
 }

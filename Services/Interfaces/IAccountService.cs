@@ -9,5 +9,7 @@ namespace ASP_MessageBoard.Services.Interfaces
             RegisterRequest request,
             CancellationToken cancellationToken = default
         );
+
+        Task<User?> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default);
     }
 }
