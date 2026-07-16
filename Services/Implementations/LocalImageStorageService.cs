@@ -39,66 +39,32 @@ namespace ASP_MessageBoard.Services.Implementations
             "image/webp",
         };
 
-        private readonly string _uploadDirectory;
-        private readonly string _uploadDirectoryFullPath;
+        private readonly string _webRootFullPath;
 
         public LocalImageStorageService(IWebHostEnvironment environment)
         {
-            var webRootPath = environment.WebRootPath;
-
-            if (string.IsNullOrWhiteSpace(webRootPath))
+            if (string.IsNullOrWhiteSpace(environment.WebRootPath))
             {
                 throw new InvalidOperationException("WebRootPath 尚未設定。");
             }
 
-            _uploadDirectory = Path.Combine(webRootPath, "uploads", "posts");
-
-            _uploadDirectoryFullPath = Path.GetFullPath(_uploadDirectory);
+            _webRootFullPath = Path.GetFullPath(environment.WebRootPath);
         }
 
-        public async Task<string> SavePostImageAsync(
+        public Task<string> SavePostImageAsync(
             IFormFile image,
             CancellationToken cancellationToken = default
         )
         {
-            ValidateBasicFileInformation(image);
+            return SaveImageAsync(image, "posts", cancellationToken);
+        }
 
-            var extension = Path.GetExtension(image.FileName).ToLowerInvariant();
-
-            await ValidateFileSignatureAsync(image, extension, cancellationToken);
-
-            Directory.CreateDirectory(_uploadDirectoryFullPath);
-
-            var fileName = $"{Guid.NewGuid():N}{extension}";
-
-            var filePath = Path.GetFullPath(Path.Combine(_uploadDirectoryFullPath, fileName));
-
-            EnsurePathIsInsideUploadDirectory(filePath);
-
-            try
-            {
-                await using var stream = new FileStream(
-                    filePath,
-                    FileMode.CreateNew,
-                    FileAccess.Write,
-                    FileShare.None,
-                    bufferSize: 81920,
-                    useAsync: true
-                );
-
-                await image.CopyToAsync(stream, cancellationToken);
-            }
-            catch
-            {
-                if (File.Exists(filePath))
-                {
-                    File.Delete(filePath);
-                }
-
-                throw;
-            }
-
-            return $"/uploads/posts/{fileName}";
+        public Task<string> SaveCoverImageAsync(
+            IFormFile image,
+            CancellationToken cancellationToken = default
+        )
+        {
+            return SaveImageAsync(image, "covers", cancellationToken);
         }
 
         public Task DeleteAsync(string? imagePath, CancellationToken cancellationToken = default)
@@ -110,23 +76,20 @@ namespace ASP_MessageBoard.Services.Implementations
                 return Task.CompletedTask;
             }
 
-            const string expectedPrefix = "/uploads/posts/";
+            var isAllowedPath =
+                imagePath.StartsWith("/uploads/posts/", StringComparison.OrdinalIgnoreCase)
+                || imagePath.StartsWith("/uploads/covers/", StringComparison.OrdinalIgnoreCase);
 
-            if (!imagePath.StartsWith(expectedPrefix, StringComparison.OrdinalIgnoreCase))
+            if (!isAllowedPath)
             {
-                throw new InvalidOperationException("圖片路徑不在允許的文章圖片目錄內。");
+                throw new InvalidOperationException("圖片路徑不在允許的目錄內。");
             }
 
-            var fileName = Path.GetFileName(imagePath);
+            var relativePath = imagePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
 
-            if (string.IsNullOrWhiteSpace(fileName))
-            {
-                return Task.CompletedTask;
-            }
+            var filePath = Path.GetFullPath(Path.Combine(_webRootFullPath, relativePath));
 
-            var filePath = Path.GetFullPath(Path.Combine(_uploadDirectoryFullPath, fileName));
-
-            EnsurePathIsInsideUploadDirectory(filePath);
+            EnsurePathIsInsideWebRoot(filePath);
 
             if (File.Exists(filePath))
             {
@@ -206,13 +169,77 @@ namespace ASP_MessageBoard.Services.Implementations
             }
         }
 
-        private void EnsurePathIsInsideUploadDirectory(string filePath)
+        private async Task<string> SaveImageAsync(
+            IFormFile image,
+            string category,
+            CancellationToken cancellationToken
+        )
         {
-            var directoryPrefix =
-                _uploadDirectoryFullPath.TrimEnd(
+            ValidateBasicFileInformation(image);
+
+            var extension = Path.GetExtension(image.FileName).ToLowerInvariant();
+
+            await ValidateFileSignatureAsync(image, extension, cancellationToken);
+
+            var uploadDirectory = Path.GetFullPath(
+                Path.Combine(_webRootFullPath, "uploads", category)
+            );
+
+            EnsurePathIsInsideWebRoot(uploadDirectory);
+
+            Directory.CreateDirectory(uploadDirectory);
+
+            var fileName = $"{Guid.NewGuid():N}{extension}";
+
+            var filePath = Path.GetFullPath(Path.Combine(uploadDirectory, fileName));
+
+            EnsurePathIsInsideDirectory(filePath, uploadDirectory);
+
+            try
+            {
+                await using var stream = new FileStream(
+                    filePath,
+                    FileMode.CreateNew,
+                    FileAccess.Write,
+                    FileShare.None,
+                    bufferSize: 81920,
+                    useAsync: true
+                );
+
+                await image.CopyToAsync(stream, cancellationToken);
+            }
+            catch
+            {
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+
+                throw;
+            }
+
+            return $"/uploads/{category}/{fileName}";
+        }
+
+        private void EnsurePathIsInsideWebRoot(string path)
+        {
+            var webRootPrefix =
+                _webRootFullPath.TrimEnd(
                     Path.DirectorySeparatorChar,
                     Path.AltDirectorySeparatorChar
                 ) + Path.DirectorySeparatorChar;
+
+            if (!path.StartsWith(webRootPrefix, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new InvalidOperationException("偵測到不合法的圖片路徑。");
+            }
+        }
+
+        private static void EnsurePathIsInsideDirectory(string filePath, string directory)
+        {
+            var directoryPrefix =
+                directory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+                + Path.DirectorySeparatorChar;
 
             if (!filePath.StartsWith(directoryPrefix, StringComparison.OrdinalIgnoreCase))
             {
