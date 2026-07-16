@@ -71,9 +71,18 @@ else
                                 }
 
                                 <div>
-                                    <h2 class="h5 mb-1">
-                                        @post.UserName
-                                    </h2>
+                                    <div class="d-flex flex-wrap align-items-baseline gap-2">
+                                        <h2 class="h5 mb-1">
+                                            @post.UserName
+                                        </h2>
+
+                                        @if (!string.IsNullOrWhiteSpace(post.UserBiography))
+                                        {
+                                            <span class="text-muted small">
+                                                @post.UserBiography
+                                            </span>
+                                        }
+                                    </div>
 
                                     <small class="text-muted">
                                         @post.CreatedAt.ToLocalTime().ToString("yyyy/MM/dd HH:mm")

@@ -41,7 +41,16 @@
                 }
 
                 <div>
-                    <h1 class="h4 mb-1">@Model.Post.UserName</h1>
+                    <div class="d-flex flex-wrap align-items-baseline gap-2">
+                        <h1 class="h4 mb-1">@Model.Post.UserName</h1>
+
+                        @if (!string.IsNullOrWhiteSpace(Model.Post.UserBiography))
+                        {
+                            <span class="text-muted">
+                                @Model.Post.UserBiography
+                            </span>
+                        }
+                    </div>
 
                     <div class="text-muted">
                         發表於

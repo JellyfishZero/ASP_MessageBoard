@@ -190,6 +190,8 @@ namespace ASP_MessageBoard.Repositories.Implementations
                 UpdatedAt = GetNullableDateTime(reader, "UpdatedAt"),
 
                 UserCoverImagePath = GetNullableString(reader, "UserCoverImagePath"),
+
+                UserBiography = GetNullableString(reader, "UserBiography"),
             };
         }
 
