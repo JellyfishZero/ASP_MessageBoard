@@ -19,7 +19,8 @@
 
                 <form asp-controller="Account"
                       asp-action="Register"
-                      method="post">
+                      method="post"
+                      enctype="multipart/form-data">
                     <div asp-validation-summary="ModelOnly"
                          class="text-danger mb-3"></div>
 
@@ -69,6 +70,22 @@
                         </div>
 
                         <span asp-validation-for="Biography"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="CoverImage"
+                               class="form-label"></label>
+
+                        <input asp-for="CoverImage"
+                               class="form-control"
+                               accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
+
+                        <div class="form-text">
+                            選填。支援 JPG、PNG、WebP，最大 5 MB。
+                        </div>
+
+                        <span asp-validation-for="CoverImage"
                               class="text-danger"></span>
                     </div>
 

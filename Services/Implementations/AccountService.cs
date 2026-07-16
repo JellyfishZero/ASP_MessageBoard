@@ -12,11 +12,20 @@ namespace ASP_MessageBoard.Services.Implementations
     {
         private readonly IUserRepository _userRepository;
         private readonly IPasswordHasher<User> _passwordHasher;
+        private readonly IImageStorageService _imageStorageService;
+        private readonly ILogger<AccountService> _logger;
 
-        public AccountService(IUserRepository userRepository, IPasswordHasher<User> passwordHasher)
+        public AccountService(
+            IUserRepository userRepository,
+            IPasswordHasher<User> passwordHasher,
+            IImageStorageService imageStorageService,
+            ILogger<AccountService> logger
+        )
         {
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
+            _imageStorageService = imageStorageService;
+            _logger = logger;
         }
 
         public async Task<User> RegisterAsync(
@@ -41,24 +50,47 @@ namespace ASP_MessageBoard.Services.Implementations
                 throw new DuplicatePhoneNumberException();
             }
 
+            string? coverImagePath = null;
+
+            if (request.CoverImage is not null)
+            {
+                coverImagePath = await _imageStorageService.SaveCoverImageAsync(
+                    request.CoverImage,
+                    cancellationToken
+                );
+            }
+
             var user = new User
             {
                 UserName = userName,
                 PhoneNumber = phoneNumber,
                 Email = email,
                 Biography = biography,
+                CoverImagePath = coverImagePath,
             };
 
             user.PasswordHash = _passwordHasher.HashPassword(user, request.Password);
-
             try
             {
                 return await _userRepository.CreateAsync(user, cancellationToken);
             }
             catch (SqlException exception) when (exception.Number == 50001)
             {
-                // 防止兩個請求同時通過前面的重複檢查。
+                if (coverImagePath is not null)
+                {
+                    await TryDeleteCoverImageAsync(coverImagePath);
+                }
+
                 throw new DuplicatePhoneNumberException(exception);
+            }
+            catch
+            {
+                if (coverImagePath is not null)
+                {
+                    await TryDeleteCoverImageAsync(coverImagePath);
+                }
+
+                throw;
             }
         }
 
@@ -89,6 +121,22 @@ namespace ASP_MessageBoard.Services.Implementations
                 PasswordVerificationResult.SuccessRehashNeeded => user,
                 _ => null,
             };
+        }
+
+        private async Task TryDeleteCoverImageAsync(string coverImagePath)
+        {
+            try
+            {
+                await _imageStorageService.DeleteAsync(coverImagePath);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogWarning(
+                    exception,
+                    "無法刪除註冊失敗後留下的 Cover Image：{CoverImagePath}",
+                    coverImagePath
+                );
+            }
         }
     }
 }

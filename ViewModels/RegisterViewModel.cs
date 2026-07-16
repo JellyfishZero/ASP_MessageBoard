@@ -26,6 +26,9 @@ namespace ASP_MessageBoard.ViewModels
         [DataType(DataType.MultilineText)]
         public string? Biography { get; set; }
 
+        [Display(Name = "個人照片")]
+        public IFormFile? CoverImage { get; set; }
+
         [Required(ErrorMessage = "請輸入密碼")]
         [StringLength(100, MinimumLength = 8, ErrorMessage = "密碼長度必須介於 8 到 100 個字元")]
         [DataType(DataType.Password)]
