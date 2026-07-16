@@ -1,4 +1,4 @@
-﻿namespace ASP_MessageBoard.Services.Dtos
+﻿namespace ASP_MessageBoard.Services.DTOs
 {
     public class RegisterRequest
     {

@@ -2,7 +2,7 @@
 using ASP_MessageBoard.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using ASP_MessageBoard.Common.Exceptions;
-using ASP_MessageBoard.Services.Dtos;
+using ASP_MessageBoard.Services.DTOs;
 
 namespace ASP_MessageBoard.Controllers
 {

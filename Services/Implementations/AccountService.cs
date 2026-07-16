@@ -4,7 +4,7 @@ using ASP_MessageBoard.Services.Interfaces;
 using ASP_MessageBoard.Common.Exceptions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
-using ASP_MessageBoard.Services.Dtos;
+using ASP_MessageBoard.Services.DTOs;
 
 namespace ASP_MessageBoard.Services.Implementations
 {
