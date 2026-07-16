@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ASP_MessageBoard.ViewModel
+namespace ASP_MessageBoard.ViewModels
 {
     public class RegisterViewModel
     {

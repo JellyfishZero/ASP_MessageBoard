@@ -1,7 +1,7 @@
 ﻿using ASP_MessageBoard.Models.Entities;
 using ASP_MessageBoard.Repositories.Interfaces;
 using ASP_MessageBoard.Services.Interfaces;
-using ASP_MessageBoard.ViewModel;
+using ASP_MessageBoard.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
 

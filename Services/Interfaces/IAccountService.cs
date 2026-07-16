@@ -1,5 +1,5 @@
 ﻿using ASP_MessageBoard.Models.Entities;
-using ASP_MessageBoard.ViewModel;
+using ASP_MessageBoard.ViewModels;
 
 namespace ASP_MessageBoard.Services.Interfaces
 {
