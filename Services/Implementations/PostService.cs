@@ -4,6 +4,7 @@ using ASP_MessageBoard.Repositories.Interfaces;
 using ASP_MessageBoard.Repositories.Models;
 using ASP_MessageBoard.Services.DTOs;
 using ASP_MessageBoard.Services.Interfaces;
+using ASP_MessageBoard.ViewModels;
 using Microsoft.Data.SqlClient;
 
 namespace ASP_MessageBoard.Services.Implementations

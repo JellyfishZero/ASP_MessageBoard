@@ -1,4 +1,5 @@
 ﻿using ASP_MessageBoard.Services.DTOs;
+using ASP_MessageBoard.ViewModels;
 
 namespace ASP_MessageBoard.Services.Interfaces
 {
