@@ -1,10 +1,10 @@
 ﻿using ASP_MessageBoard.Models.Entities;
 using ASP_MessageBoard.Repositories.Interfaces;
 using ASP_MessageBoard.Services.Interfaces;
-using ASP_MessageBoard.ViewModels;
 using ASP_MessageBoard.Common.Exceptions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
+using ASP_MessageBoard.Services.Dtos;
 
 namespace ASP_MessageBoard.Services.Implementations
 {
@@ -20,13 +20,13 @@ namespace ASP_MessageBoard.Services.Implementations
         }
 
         public async Task<User> RegisterAsync(
-            RegisterViewModel model,
+            RegisterRequest request,
             CancellationToken cancellationToken = default
         )
         {
-            var phoneNumber = model.PhoneNumber.Trim();
-            var email = model.Email.Trim();
-            var userName = model.UserName.Trim();
+            var phoneNumber = request.PhoneNumber.Trim();
+            var email = request.Email.Trim();
+            var userName = request.UserName.Trim();
 
             var existingUser = await _userRepository.GetByPhoneNumberAsync(
                 phoneNumber,
@@ -45,7 +45,7 @@ namespace ASP_MessageBoard.Services.Implementations
                 Email = email,
             };
 
-            user.PasswordHash = _passwordHasher.HashPassword(user, model.Password);
+            user.PasswordHash = _passwordHasher.HashPassword(user, request.Password);
 
             try
             {

@@ -2,6 +2,7 @@
 using ASP_MessageBoard.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using ASP_MessageBoard.Common.Exceptions;
+using ASP_MessageBoard.Services.Dtos;
 
 namespace ASP_MessageBoard.Controllers
 {
@@ -34,7 +35,15 @@ namespace ASP_MessageBoard.Controllers
 
             try
             {
-                await _accountService.RegisterAsync(model, cancellationToken);
+                var request = new RegisterRequest
+                {
+                    UserName = model.UserName,
+                    PhoneNumber = model.PhoneNumber,
+                    Email = model.Email,
+                    Password = model.Password
+                };
+
+                await _accountService.RegisterAsync(request, cancellationToken);
 
                 TempData["SuccessMessage"] = "註冊成功，請登入。";
 
