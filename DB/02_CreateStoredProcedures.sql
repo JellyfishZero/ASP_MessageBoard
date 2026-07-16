@@ -254,3 +254,72 @@ BEGIN
     END CATCH;
 END;
 GO
+
+-- Comment
+
+CREATE OR ALTER PROCEDURE dbo.usp_Comment_Create
+    @UserId INT,
+    @PostId INT,
+    @Content NVARCHAR(1000)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    IF NOT EXISTS
+    (
+        SELECT 1
+        FROM dbo.Posts
+        WHERE PostId = @PostId
+    )
+        THROW 50020, N'找不到指定的文章。', 1;
+
+    INSERT INTO dbo.Comments
+    (
+        UserId,
+        PostId,
+        Content
+    )
+    VALUES
+    (
+        @UserId,
+        @PostId,
+        @Content
+    );
+
+    DECLARE @CommentId INT = CONVERT(INT, SCOPE_IDENTITY());
+
+    SELECT
+        c.CommentId,
+        c.UserId,
+        u.UserName,
+        c.PostId,
+        c.Content,
+        c.CreatedAt
+    FROM dbo.Comments AS c
+    INNER JOIN dbo.Users AS u
+        ON u.UserId = c.UserId
+    WHERE c.CommentId = @CommentId;
+END;
+GO
+
+CREATE OR ALTER PROCEDURE dbo.usp_Comment_GetByPostId
+    @PostId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        c.CommentId,
+        c.UserId,
+        u.UserName,
+        c.PostId,
+        c.Content,
+        c.CreatedAt
+    FROM dbo.Comments AS c
+    INNER JOIN dbo.Users AS u
+        ON u.UserId = c.UserId
+    WHERE c.PostId = @PostId
+    ORDER BY c.CreatedAt ASC, c.CommentId ASC;
+END;
+GO
