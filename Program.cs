@@ -1,3 +1,4 @@
+using ASP_MessageBoard.Authentication;
 using ASP_MessageBoard.Models.Entities;
 using ASP_MessageBoard.Repositories;
 using ASP_MessageBoard.Repositories.Implementations;
@@ -20,6 +21,7 @@ builder.Services.AddSingleton<IImageStorageService, LocalImageStorageService>();
 builder.Services.AddScoped<IPostService, PostService>(); // 文章服務
 builder.Services.AddScoped<ICommentRepository, CommentRepository>(); // 留言資料存取服務
 builder.Services.AddScoped<ICommentService, CommentService>(); // 留言服務
+builder.Services.AddScoped<ApplicationCookieEvents>(); // 驗證 Cookie 對應的使用者是否仍存在
 builder
     .Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -34,6 +36,7 @@ builder
 
         options.ExpireTimeSpan = TimeSpan.FromHours(8);
         options.SlidingExpiration = true; // 使用者持續操作時延長登入有效期。
+        options.EventsType = typeof(ApplicationCookieEvents);
     });
 
 var app = builder.Build();
